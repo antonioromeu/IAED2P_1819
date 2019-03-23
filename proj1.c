@@ -76,13 +76,15 @@ void adicionaEvento(char descricao[], int data, int inicio, int duracao, int sal
     a.horario.dia = a.horario.amd % 100;
     a.horario.mes = (a.horario.amd % 10000) / 100;
     a.horario.ano = a.horario.amd / 10000;
+    a.horario.minutos = a.inicio % 100;
+    a.horario.hora = a.inicio / 100;
     tab_eventos[n_evento] = a;
 }
 
-int listaEventos(evento tab_eventos[MAX_LEN]) {
+int listaEventos(evento tab_eventos[MAX_LEN], int n_evento) {
     int i = 0;
-    for (; i < 1; i++) {
-        printf("%s %d/%d/%d %d:%d %d Sala%d %s\n* %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel, tab_eventos[i].participantes);
+    for (; i < n_evento; i++) {
+        printf("%s %02d/%02d/%02d %02d:%02d %02d Sala%d %s\n* %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel, tab_eventos[i].participantes);
     }
 }
 
@@ -126,7 +128,7 @@ int main() {
             n_evento++;
             break;
         case 'l' :
-            listaEventos(tab_eventos);
+            listaEventos(tab_eventos, n_evento);
             break;
         case 's' :
             break;
