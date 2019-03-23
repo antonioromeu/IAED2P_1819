@@ -42,8 +42,9 @@ int inicioParaMinutos(int inicio) {
 }
 
 int transformaData(evento a) {
-    a.horario.amd = ((a.data % 10000) * 10000) + (((a.data / 10000) % 100) * 100) + (a.data / 1000000);
-    return a.horario.amd;
+    int amd = 0;
+    amd = ((a.data % 10000) * 10000) + (((a.data / 10000) % 100) * 100) + (a.data / 1000000);
+    return amd;
 }
 
 int sobreposto(evento a, evento b) {
@@ -71,12 +72,16 @@ void adicionaEvento(char descricao[], int data, int inicio, int duracao, int sal
     a.sala = sala;
     strcpy(a.responsavel, responsavel);
     strcpy(a.participantes, participantes);
+    a.horario.amd = transformaData(a);
+    a.horario.dia = a.horario.amd % 100;
+    a.horario.mes = (a.horario.amd % 10000) / 100;
+    a.horario.ano = a.horario.amd / 10000;
     tab_eventos[n_evento] = a;
 }
 
 int listaEventos(evento tab_eventos[MAX_LEN]) {
     int i = 0;
-    for (; i < 5; i++) {
+    for (; i < 1; i++) {
         printf("%s %d/%d/%d %d:%d %d Sala%d %s\n* %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel, tab_eventos[i].participantes);
     }
 }
@@ -107,10 +112,6 @@ void alteraInicio(char descricao[], evento tab_eventos[MAX_LEN], int novo_inicio
     tab_eventos[index].sala = nova_sala;
 }*/
 
-void adicionaParticipante(char descricao[], evento tab_eventos[MAX_LEN], char novo_participante[]) {
-
-}
-
 int main() {
     char funcao, descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes[LST_PARTICIPANTES], novo_participante[DESCRICAO];
     int novo_inicio = 0, nova_duracao = 0, nova_sala = 0, n_evento = 0, data = 0, inicio = 0, duracao = 0, sala = 0;
@@ -120,7 +121,7 @@ int main() {
     while (TRUE) {
         switch(funcao) {
         case 'a' :
-            scanf(" %s:%d:%d:%d:%d:%s:%s", descricao, &data, &inicio, &duracao, &sala, responsavel, participantes);
+            scanf(" %[0-9a-zA-Z ]:%d:%d:%d:%d:%[0-9a-zA-Z ]:%[0-9a-zA-Z: ]\n", descricao, &data, &inicio, &duracao, &sala, responsavel, participantes);
             adicionaEvento(descricao, data, inicio, duracao, sala, responsavel, participantes, tab_eventos, n_evento);
             n_evento++;
             break;
@@ -147,7 +148,7 @@ int main() {
             break;
         case 'A' :
             scanf(" %s:%s", descricao, novo_participante);
-            adicionaParticipante(descricao, tab_eventos, novo_participante);
+            //adicionaParticipante(descricao, tab_eventos, novo_participante);
             break;
         case 'R' :
             break;
