@@ -8,9 +8,9 @@
 #define LST_PARTICIPANTES 191
 #define MAX_SALAS 10
 #define MAX_EVENTOS 100
+#define MAX_LEN 1000
 #define FALSE 0
 #define TRUE 1
-#define MAX_LEN 1000
 
 typedef struct {
     int dia;
@@ -31,6 +31,23 @@ typedef struct {
     int sala;
     data horario;
 } evento;
+
+evento tab_eventos[MAX_LEN];
+evento tab_salas[MAX_SALAS][MAX_EVENTOS];
+evento nulo;
+
+void inicializaTabelas() {
+    int i = 0, j = 0, k = 0;
+    for (; i < MAX_LEN; i++) {
+        tab_eventos[i] = nulo;
+    }
+
+    for (; j < MAX_SALAS; j++) {
+        for (; k < MAX_EVENTOS; k++) {
+            tab_salas[j][k] = nulo;
+        }
+    }
+}
 
 int inicioParaMinutos(int inicio) {
     int minutos, horas;
@@ -55,7 +72,7 @@ int sobreposto(evento a, evento b) {
     return TRUE;
 }
 
-int procuraEvento(char descricao[], evento tab_eventos[MAX_LEN]) {
+int procuraEvento(char descricao[]) {
     int i = 0;
     for (; i < MAX_LEN; i++) {
         if (strcmp(tab_eventos[i].descricao, descricao) == 0) return i;
@@ -63,7 +80,8 @@ int procuraEvento(char descricao[], evento tab_eventos[MAX_LEN]) {
     return -1;
 }
 
-void adicionaEvento(char descricao[], int data, int inicio, int duracao, int sala, char responsavel[], char participantes[], evento tab_eventos[MAX_LEN], int n_evento) {
+void adicionaEvento(char descricao[], int data, int inicio, int duracao, int sala, char responsavel[], char participantes[]) {
+    int i = 0;
     evento a;
     strcpy(a.descricao, descricao);
     a.data = data;
@@ -78,86 +96,73 @@ void adicionaEvento(char descricao[], int data, int inicio, int duracao, int sal
     a.horario.ano = a.horario.amd / 10000;
     a.horario.minutos = a.inicio % 100;
     a.horario.hora = a.inicio / 100;
-    tab_eventos[n_evento] = a;
+    while (strcmp(tab_eventos[i].descricao, nulo.descricao) != 0 && i < MAX_LEN) i++;
+    tab_eventos[i] = a;
+    i = 0;
+    while (strcmp(tab_salas[a.sala - 1][i].descricao, nulo.descricao) != 0 && i < MAX_EVENTOS) i++;
+    tab_salas[a.sala - 1][i] = a;
 }
 
-int listaEventos(evento tab_eventos[MAX_LEN], int n_evento) {
+void listaEventos() {
     int i = 0;
-    for (; i < n_evento; i++) {
+    for (; strcmp(tab_eventos[i].descricao, nulo.descricao) != 0 && i < MAX_LEN; i++) {
         printf("%s %02d/%02d/%02d %02d:%02d %02d Sala%d %s\n* %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel, tab_eventos[i].participantes);
     }
 }
 
-void apagaEvento(char descricao[], evento tab_eventos[MAX_LEN]) {
+void listaSala(int sala) {
+    int i = 0;
+    for (; strcmp(tab_salas[sala - 1][i].descricao, nulo.descricao) != 0 && i < MAX_EVENTOS; i++) {
+        printf("%s %02d/%02d/%02d %02d:%02d %02d Sala%d %s\n* %s\n", tab_salas[sala - 1][i].descricao, tab_salas[sala - 1][i].horario.dia, tab_salas[sala - 1][i].horario.mes, tab_salas[sala - 1][i].horario.ano, tab_salas[sala - 1][i].horario.hora, tab_salas[sala - 1][i].horario.minutos, tab_salas[sala - 1][i].duracao, tab_salas[sala - 1][i].sala, tab_salas[sala - 1][i].responsavel, tab_salas[sala - 1][i].participantes);
+    }
+}
+
+void apagaEvento(char descricao[]) {
     int index;
-    index = procuraEvento(descricao, tab_eventos);
+    index = procuraEvento(descricao);
     for (; index < MAX_LEN; index++) {
         tab_eventos[index] = tab_eventos[index + 1];
     }
 }
 
-void alteraInicio(char descricao[], evento tab_eventos[MAX_LEN], int novo_inicio) {    
-    int index;
-    index = procuraEvento(descricao, tab_eventos);
+void alteraInicio(char descricao[], int novo_inicio) {    
+    int index = 0;
+    index = procuraEvento(descricao);
     tab_eventos[index].inicio = novo_inicio;
 }
 
-/*void alteraDuracao(char descricao[], evento tab_eventos[MAX_LEN], int nova_duracao) {
-    int index;
-    index = procuraTabela(descricao, tab_eventos);
+void alteraDuracao(char descricao[], int nova_duracao) {
+    int index = 0;
+    index = procuraEvento(descricao);
     tab_eventos[index].duracao = nova_duracao;
-}*/
+}
 
-/*void mudaSala(char descricao[], evento tab_eventos[MAX_LEN], int nova_sala) {
-    int index;
-    index = procuraTabela(descricao, tab_eventos);
+void mudaSala(char descricao[], int nova_sala) {
+    int index = 0;
+    index = procuraEvento(descricao);
     tab_eventos[index].sala = nova_sala;
-}*/
+}
 
 int main() {
-    char funcao, descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes[LST_PARTICIPANTES], novo_participante[DESCRICAO];
+    char descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes[LST_PARTICIPANTES], novo_participante[DESCRICAO];
     int novo_inicio = 0, nova_duracao = 0, nova_sala = 0, n_evento = 0, data = 0, inicio = 0, duracao = 0, sala = 0;
-    evento tab_eventos[MAX_LEN];
-    evento tab_salas[MAX_SALAS][MAX_EVENTOS];
-    funcao = getchar();
+    strcpy(nulo.descricao, "nulo");
+    inicializaTabelas();
     while (TRUE) {
-        switch(funcao) {
+        switch(getchar()) {
         case 'a' :
-            scanf(" %[0-9a-zA-Z ]:%d:%d:%d:%d:%[0-9a-zA-Z ]:%[0-9a-zA-Z: ]\n", descricao, &data, &inicio, &duracao, &sala, responsavel, participantes);
-            adicionaEvento(descricao, data, inicio, duracao, sala, responsavel, participantes, tab_eventos, n_evento);
+            scanf(" %[^:]:%d:%d:%d:%d:%[^:]:%[^\n]", descricao, &data, &inicio, &duracao, &sala, responsavel, participantes);
+            adicionaEvento(descricao, data, inicio, duracao, sala, responsavel, participantes);
             n_evento++;
             break;
         case 'l' :
-            listaEventos(tab_eventos, n_evento);
+            listaEventos();
             break;
         case 's' :
-            break;
-        case 'r' :
-            scanf(" %s", descricao);
-            //apagaEvento(descricao, tab_eventos);
-            break;
-        case 'i' :
-            scanf(" %s:%d", descricao, &novo_inicio);
-            alteraInicio(descricao, tab_eventos, novo_inicio);
-            break;
-        case 't' :
-            scanf(" %s:%d", descricao, &nova_duracao);
-            //alteraDuracao(descricao, tab_eventos, nova_duracao);
-            break;
-        case 'm' :
-            scanf(" %s:%d", descricao, &nova_sala);
-            //mudaSala(descricao, tab_eventos, nova_sala);
-            break;
-        case 'A' :
-            scanf(" %s:%s", descricao, novo_participante);
-            //adicionaParticipante(descricao, tab_eventos, novo_participante);
-            break;
-        case 'R' :
-            break;
-        case 'T' :
+            listaSala(sala);
             break;
         }
-        funcao = getchar();
+        getchar(); /* le o \n */
     }
    return 0;
 }
