@@ -92,14 +92,11 @@ evento separaParticipantes(evento a, char participantes[]) {
 
 int verificaSobreposicaoSalas(evento a) {
     int i = 0, res = 0;
-    for (; i < contador_eventos; i++) {
-        if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
-            if (sobreposto(a, tab_eventos[i])){
-                if (a.sala == tab_eventos[i].sala) {
-                    printf("Impossivel agendar evento %s. Sala%d ocupada.\n", a.descricao, a.sala);
-                    res = 1;
-                }
-            }
+    for (i = 0; i < contador_eventos; i++) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (a.sala == tab_eventos[i].sala)) {
+            printf("entrou salas");
+            printf("Impossivel agendar evento %s. Sala%d ocupada.\n", a.descricao, a.sala);
+            res = 1;
         }
     }
     return res;
@@ -108,24 +105,18 @@ int verificaSobreposicaoSalas(evento a) {
 int verificaSobreposicaoResponsavel(evento a) {
     int i = 0, k = 0, res = 0;
     for (i = 0; i < contador_eventos; i++) {
-        if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
-            if (sobreposto(a, tab_eventos[i])) {
-                if (strcmp(a.responsavel, tab_eventos[i].responsavel) == 0) {
-                    printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
-                    res = 1;
-                }
-            }
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (strcmp(a.responsavel, tab_eventos[i].responsavel) == 0)) {
+            printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
+            res = 1;
         }
     }
 
     for (i = 0; i < contador_eventos; i++) {
-        if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
-            if (sobreposto(a, tab_eventos[i])) {
-                for (k = 0; k < 3; k++) {
-                    if (strcmp(a.responsavel, tab_eventos[i].participantes[k]) == 0) {
-                        printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
-                        res = 1;
-                    }
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && sobreposto(a, tab_eventos[i])) {
+            for (k = 0; k < 3; k++) {
+                if (strcmp(a.responsavel, tab_eventos[i].participantes[k]) == 0) {
+                    printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
+                    res = 1;
                 }
             }
         }
@@ -136,10 +127,21 @@ int verificaSobreposicaoResponsavel(evento a) {
 int verificaSobreposicaoParticipantes(evento a) {
     int i = 0, k = 0, j = 0, res = 0;
     for (i = 0; i < contador_eventos; i++) {
-        if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
-            if (sobreposto(a, tab_eventos[i])) {
-                for (j = 0; j < 3; j++) {
-                    if (strcmp(a.participantes[j], tab_eventos[i].responsavel) == 0) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i]))) {
+            for (j = 0; j < 3; j++) {
+                if (strcmp(a.participantes[j], tab_eventos[i].responsavel) == 0) {
+                    printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
+                    res = 1;
+                    }
+                }
+            }
+        }
+
+    for (i = 0; i < contador_eventos; i++) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i]))) {
+            for (j = 0; j < 3; j++) {
+                for (k = 0; k < 3; k++) {
+                    if (strcmp(a.participantes[j], tab_eventos[i].participantes[k]) == 0) {
                         printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
                         res = 1;
                     }
@@ -147,31 +149,7 @@ int verificaSobreposicaoParticipantes(evento a) {
             }
         }
     }
-    for (i = 0; i < contador_eventos; i++) {
-        if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
-            if (sobreposto(a, tab_eventos[i])) {
-                for (j = 0; j < 3; j++) {
-                    for (k = 0; k < 3; k++) {
-                        if (strcmp(a.participantes[j], tab_eventos[i].participantes[k]) == 0) {
-                            printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
-                            res = 1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     return res;
-}
-
-int verificaMaxParticipantes(evento a) {
-    int i = 0, k = 0;
-    for (; i < 3; i++) {
-        for (; k < 3; k++) {
-            
-        }
-    }
 }
 
 int procuraEvento(char descricao[]) {
@@ -277,6 +255,7 @@ void alteraDuracao(char descricao[], int nova_duracao) {
         temp = tab_eventos[index];
         temp.duracao = nova_duracao;
         res += verificaSobreposicaoSalas(temp);
+        if (res != 0) return;
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) return;
@@ -293,6 +272,7 @@ void alteraSala(char descricao[], int nova_sala) {
         temp = tab_eventos[index];
         temp.sala = nova_sala;
         res += verificaSobreposicaoSalas(temp);
+        if (res != 0) return;
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) return;
@@ -337,8 +317,6 @@ int main() {
             scanf(" %[^:]:%d:%d:%d:%d:%[^:]:%[^\n]", descricao, &data, &inicio, &duracao, &sala, responsavel, participantes);
             a = criaEvento(descricao, data, inicio, duracao, sala, responsavel, participantes);
             adicionaEvento(a);
-            /*for 
-            if (strcmp(a.responsavel, tab_eventos[i].participantes[0]) == 0)*/
             contador_eventos++;
             ordenaEventos();
             break;
