@@ -139,6 +139,18 @@ int verificaSobreposicaoParticipantes(evento a) {
         if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
             if (sobreposto(a, tab_eventos[i])) {
                 for (j = 0; j < 3; j++) {
+                    if (strcmp(a.participantes[j], tab_eventos[i].responsavel) == 0) {
+                        printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
+                        res = 1;
+                    }
+                }
+            }
+        }
+    }
+    for (i = 0; i < contador_eventos; i++) {
+        if (strcmp(a.descricao, tab_eventos[i].descricao) != 0) {
+            if (sobreposto(a, tab_eventos[i])) {
+                for (j = 0; j < 3; j++) {
                     for (k = 0; k < 3; k++) {
                         if (strcmp(a.participantes[j], tab_eventos[i].participantes[k]) == 0) {
                             printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
@@ -149,7 +161,17 @@ int verificaSobreposicaoParticipantes(evento a) {
             }
         }
     }
+
     return res;
+}
+
+int verificaMaxParticipantes(evento a) {
+    int i = 0, k = 0;
+    for (; i < 3; i++) {
+        for (; k < 3; k++) {
+            
+        }
+    }
 }
 
 int procuraEvento(char descricao[]) {
@@ -194,6 +216,16 @@ void mudaInicio(char descricao[], int inicio) {
     tab_eventos[index].horario.hora = inicio / 100;
 }
 
+void mudaDuracao(char descricao[], int duracao) {
+    int index = procuraEvento(descricao);
+    tab_eventos[index].duracao = duracao;
+}
+
+void mudaSala(char descricao[], int sala) {
+    int index = procuraEvento(descricao);
+    tab_eventos[index].sala = sala;
+}
+
 void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
@@ -221,13 +253,14 @@ void apagaEvento(char descricao[]) {
 }
 
 void alteraInicio(char descricao[], int novo_inicio) {    
-    int i = 0, res = 0, index;
+    int res = 0, index;
     evento temp;
     index = procuraEvento(descricao);
     if (index != -1) {
         temp = tab_eventos[index];
         temp.inicio = novo_inicio;
         res += verificaSobreposicaoSalas(temp);
+        if (res != 0) return;
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) return;
@@ -237,15 +270,35 @@ void alteraInicio(char descricao[], int novo_inicio) {
 }
 
 void alteraDuracao(char descricao[], int nova_duracao) {
-    int index;
+    int res = 0, index;
+    evento temp;
     index = procuraEvento(descricao);
-    tab_eventos[index].duracao = nova_duracao;
+    if (index != -1) {
+        temp = tab_eventos[index];
+        temp.duracao = nova_duracao;
+        res += verificaSobreposicaoSalas(temp);
+        res += verificaSobreposicaoResponsavel(temp);
+        res += verificaSobreposicaoParticipantes(temp);
+        if (res != 0) return;
+        mudaDuracao(descricao, nova_duracao);
+    }
+    else printf("Evento %s inexistente\n", descricao);
 }
 
-void mudaSala(char descricao[], int nova_sala) {
-    int index;
+void alteraSala(char descricao[], int nova_sala) {
+    int res = 0, index;
+    evento temp;
     index = procuraEvento(descricao);
-    tab_eventos[index].sala = nova_sala;
+    if (index != -1) {
+        temp = tab_eventos[index];
+        temp.sala = nova_sala;
+        res += verificaSobreposicaoSalas(temp);
+        res += verificaSobreposicaoResponsavel(temp);
+        res += verificaSobreposicaoParticipantes(temp);
+        if (res != 0) return;
+        mudaSala(descricao, nova_sala);
+    }
+    else printf("Evento %s inexistente\n", descricao);
 }
 
 void ordenaEventos() {
@@ -273,7 +326,7 @@ void ordenaEventos() {
 
 int main() {
     char descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes[LST_PARTICIPANTES];
-    int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0;
+    int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0, nova_duracao = 0, nova_sala;
     evento a;
     strcpy(nulo.descricao, "nulo");
     nulo.sala = 0;
@@ -284,6 +337,8 @@ int main() {
             scanf(" %[^:]:%d:%d:%d:%d:%[^:]:%[^\n]", descricao, &data, &inicio, &duracao, &sala, responsavel, participantes);
             a = criaEvento(descricao, data, inicio, duracao, sala, responsavel, participantes);
             adicionaEvento(a);
+            /*for 
+            if (strcmp(a.responsavel, tab_eventos[i].participantes[0]) == 0)*/
             contador_eventos++;
             ordenaEventos();
             break;
@@ -302,6 +357,16 @@ int main() {
         case 'i' :
             scanf(" %[^:]:%d", descricao, &novo_inicio);
             alteraInicio(descricao, novo_inicio);
+            ordenaEventos();
+            break;
+        case 't' :
+            scanf(" %[^:]:%d", descricao, &nova_duracao);
+            alteraDuracao(descricao, nova_duracao);
+            ordenaEventos();
+            break;
+        case 'm' :
+            scanf(" %[^:]:%d", descricao, &nova_sala);
+            alteraSala(descricao, nova_sala);
             ordenaEventos();
             break;
         case 'x':
