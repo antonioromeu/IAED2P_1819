@@ -30,6 +30,7 @@ typedef struct {
     int inicio;
     int duracao;
     int sala;
+    int n_participantes;
     data horario;
 } evento;
 
@@ -48,6 +49,13 @@ void inicializaTabelas() {
         for (k = 0; k < MAX_EVENTOS; k++) {
             tab_salas[j][k] = -1;
         }
+    }
+}
+
+void inicializaParticipantesNulo() {
+    int i = 0;
+    for (; i < 3; i++) {
+        nulo.participantes[i][0] = '\0';
     }
 }
 
@@ -79,6 +87,7 @@ evento separaParticipantes(evento a, char participantes[]) {
             a.participantes[p][j] = '\0';
             p++;
             j = -1;
+            a.n_participantes++;
             continue;
         }
         a.participantes[p][j] = participantes[i];
@@ -94,7 +103,6 @@ int verificaSobreposicaoSalas(evento a) {
     int i = 0, res = 0;
     for (i = 0; i < contador_eventos; i++) {
         if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (a.sala == tab_eventos[i].sala)) {
-            printf("entrou salas");
             printf("Impossivel agendar evento %s. Sala%d ocupada.\n", a.descricao, a.sala);
             res = 1;
         }
@@ -152,6 +160,31 @@ int verificaSobreposicaoParticipantes(evento a) {
     return res;
 }
 
+int verificaAdicionaParticipante(char participante[], evento a) {
+    int i = 0, k = 0;
+    for (i = 0; i < contador_eventos; i++) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && sobreposto(a, tab_eventos[i])) {
+            if (strcmp(tab_eventos[i].responsavel, participante) == 0) {
+                printf("Impossivel adicionar participante. Participante %s tem um evento sobreposto.\n", participante);
+                return 1;
+            }
+        }
+    }
+
+    for (i = 0; i < contador_eventos; i++) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && sobreposto(a, tab_eventos[i])) {
+            for (k = 0; k < 3; k++) {
+                if (strcmp(tab_eventos[i].participantes[k], participante) == 0) {
+                    printf("Impossivel adicionar participante. Participante %s tem um evento sobreposto.\n", participante);
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 int procuraEvento(char descricao[]) {
     int i = 0;
     for (; i < contador_eventos; i++) {
@@ -163,6 +196,7 @@ int procuraEvento(char descricao[]) {
 void adicionaEvento(evento a) {
     int res = 0;
     res += verificaSobreposicaoSalas(a);
+    if (res != 0) return;
     res += verificaSobreposicaoResponsavel(a);
     res += verificaSobreposicaoParticipantes(a);
     if (res != 0) return;
@@ -185,6 +219,7 @@ evento criaEvento(char descricao[], int data, int inicio, int duracao, int sala,
     a.horario.ano = a.horario.amd / 10000;
     a.horario.minutos = a.inicio % 100;
     a.horario.hora = a.inicio / 100;
+    a.n_participantes = 1;
     return a;
 }
 
@@ -281,6 +316,35 @@ void alteraSala(char descricao[], int nova_sala) {
     else printf("Evento %s inexistente\n", descricao);
 }
 
+void adicionaParticipante(char descricao[], char participante[]) {
+    int index, i, res = 0;
+    char copia[PESSOA_RESP+1];
+    evento temp;
+    index = procuraEvento(descricao);
+    for (i = 0; i < 3; i++) {
+        if (strcmp(tab_eventos[index].participantes[i], participante) == 0) return;
+    }
+    if (index == -1) {
+        printf("Evento %s inexistente.\n", descricao);
+        return;
+    }
+    if (tab_eventos[index].n_participantes == 3) {
+        printf("Impossivel adicionar participante. Evento %s ja tem 3 participantes.\n", descricao);
+        return;
+    }
+    temp = tab_eventos[index];
+    res += verificaAdicionaParticipante(participante, temp);
+    if (res != 0) return;
+    res += verificaSobreposicaoResponsavel(temp);
+    res += verificaSobreposicaoParticipantes(temp);
+    if (res != 0) return;
+    strcpy(tab_eventos[index].participantes[tab_eventos[index].n_participantes], participante);
+    copia[0] = ':';
+    strcat(copia, participante);
+    strcat(tab_eventos[index].participantes_str, copia);
+    tab_eventos[index].n_participantes++;
+}
+
 void ordenaEventos() {
     int index = contador_eventos - 1;
     evento temp;
@@ -305,12 +369,13 @@ void ordenaEventos() {
 }
 
 int main() {
-    char descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes[LST_PARTICIPANTES];
-    int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0, nova_duracao = 0, nova_sala;
+    char descricao[DESCRICAO], responsavel[PESSOA_RESP], novo_participante[PESSOA_RESP], participantes[LST_PARTICIPANTES];
+    int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0, nova_duracao = 0, nova_sala = 0;
     evento a;
     strcpy(nulo.descricao, "nulo");
     nulo.sala = 0;
     inicializaTabelas();
+    inicializaParticipantesNulo();
     while (TRUE) {
         switch(getchar()) {
         case 'a' :
@@ -346,6 +411,10 @@ int main() {
             scanf(" %[^:]:%d", descricao, &nova_sala);
             alteraSala(descricao, nova_sala);
             ordenaEventos();
+            break;
+        case 'A' :
+            scanf(" %[^:]:%[^\n]", descricao, novo_participante);
+            adicionaParticipante(descricao, novo_participante);
             break;
         case 'x':
             return 0;
