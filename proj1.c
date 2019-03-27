@@ -35,20 +35,13 @@ typedef struct {
 } evento;
 
 evento tab_eventos[MAX_LEN];
-int tab_salas[MAX_SALAS][MAX_EVENTOS];
-int contador_eventos = 0;
 evento nulo;
+int contador_eventos = 0;
 
 void inicializaTabelas() {
-    int i, j, k;
+    int i;
     for (i = 0; i < MAX_LEN; i++) {
         tab_eventos[i] = nulo;
-    }
-
-    for (j = 0; j < MAX_SALAS; j++) {
-        for (k = 0; k < MAX_EVENTOS; k++) {
-            tab_salas[j][k] = -1;
-        }
     }
 }
 
@@ -93,7 +86,11 @@ evento separaParticipantes(evento a, char participantes[]) {
 }
 
 void imprimeParticipantes(evento a) {
-    printf("* %s %s %s\n", a.participantes[0], a.participantes[1], a.participantes[2]);
+    int i;
+    for (i = 0; i < 3; i++) {
+        if (a.participantes[i][0] != '\0') printf(" %s", a.participantes[i]);
+    }
+    printf("\n");
 }
 
 int verificaSobreposicaoSalas(evento a) {
@@ -203,6 +200,7 @@ void adicionaEvento(evento a) {
 evento criaEvento(char descricao[], int data, int inicio, int duracao, int sala, char responsavel[], char participantes[]) {
     evento a;
     strcpy(a.descricao, descricao);
+    a.n_participantes = 1;
     a.data = data;
     a.inicio = inicio;
     a.duracao = duracao;
@@ -216,7 +214,6 @@ evento criaEvento(char descricao[], int data, int inicio, int duracao, int sala,
     a.horario.ano = a.horario.amd / 10000;
     a.horario.minutos = a.inicio % 100;
     a.horario.hora = a.inicio / 100;
-    a.n_participantes = 1;
     return a;
 }
 
@@ -241,7 +238,7 @@ void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
         if (strcmp(tab_eventos[i].descricao, nulo.descricao) != 0) {
-            printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
+            printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
             imprimeParticipantes(tab_eventos[i]);
         }
     }
@@ -251,7 +248,7 @@ void listaSala(int sala) {
     int i = 0;
     for (; i < contador_eventos; i++) {
         if (tab_eventos[i].sala == sala) {
-            printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
+            printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
             imprimeParticipantes(tab_eventos[i]);
         }
     }
@@ -350,20 +347,25 @@ void adicionaParticipante(char descricao[], char participante[]) {
 }
 
 void removeParticipante(char descricao[], char participante[]) {
-    int index;
+    int i, index;
     index = procuraEvento(descricao);
-    if (tab_eventos[index].n_participantes == 1) {
-        if (strcmp(tab_eventos[index].participantes[0], participante) == 0) {
-            printf("Impossivel remover participante. Participante %s e o unico participante no evento %s.\n", participante, descricao);
-            return;
-        }
-        if (strcmp(tab_eventos[index].participantes[0], participante) != 0) return;
-    }
     if (index == -1) {
         printf("Evento %s inexistente.\n", descricao);
         return;
     }
-    tab_eventos[index].participantes[tab_eventos[index].n_participantes][0] = '\0';
+    for (i = 0; i < 3; i++) {
+        if (strcmp(tab_eventos[index].participantes[i], participante) == 0) {
+            break;
+        }
+        if (i == 2) return;
+    }
+    if (tab_eventos[index].n_participantes == 1) {
+        printf("Impossivel remover participante. Participante %s e o unico participante no evento %s.\n", participante, descricao);
+        return;
+    }
+    for (i = 0; i < 3; i++) {
+        if (strcmp(tab_eventos[index].participantes[i], participante) == 0) tab_eventos[index].participantes[i][0] = '\0';
+    }
     tab_eventos[index].n_participantes--;
 }
 
