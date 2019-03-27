@@ -92,12 +92,16 @@ evento separaParticipantes(evento a, char participantes[]) {
     return a;
 }
 
+void imprimeParticipantes(evento a) {
+    printf("* %s %s %s\n", a.participantes[0], a.participantes[1], a.participantes[2]);
+}
+
 int verificaSobreposicaoSalas(evento a) {
     int i = 0, res = 0;
     for (i = 0; i < contador_eventos; i++) {
         if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (a.sala == tab_eventos[i].sala)) {
             printf("Impossivel agendar evento %s. Sala%d ocupada.\n", a.descricao, a.sala);
-            res = 1;
+            res += 1;
         }
     }
     return res;
@@ -220,6 +224,7 @@ void mudaInicio(char descricao[], int inicio) {
     int index = procuraEvento(descricao);
     tab_eventos[index].horario.minutos = inicio % 100;
     tab_eventos[index].horario.hora = inicio / 100;
+    tab_eventos[index].inicio = inicio;
 }
 
 void mudaDuracao(char descricao[], int duracao) {
@@ -235,14 +240,20 @@ void mudaSala(char descricao[], int sala) {
 void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
-        if (strcmp(tab_eventos[i].descricao, nulo.descricao) != 0) printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n* %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel, tab_eventos[i].participantes_str);
+        if (strcmp(tab_eventos[i].descricao, nulo.descricao) != 0) {
+            printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
+            imprimeParticipantes(tab_eventos[i]);
+        }
     }
 }
 
 void listaSala(int sala) {
     int i = 0;
     for (; i < contador_eventos; i++) {
-        if (tab_eventos[i].sala == sala) printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n* %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel, tab_eventos[i].participantes_str);
+        if (tab_eventos[i].sala == sala) {
+            printf("%s %02d%02d%02d %02d%02d %02d Sala%d %s\n", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
+            imprimeParticipantes(tab_eventos[i]);
+        }
     }
 }
 
@@ -332,7 +343,7 @@ void adicionaParticipante(char descricao[], char participante[]) {
     res += verificaSobreposicaoParticipantes(temp);
     if (res != 0) return;
     strcpy(tab_eventos[index].participantes[tab_eventos[index].n_participantes], participante);
-    copia[0] = ':';
+    copia[0] = ' ';
     strcat(copia, participante);
     strcat(tab_eventos[index].participantes_str, copia);
     tab_eventos[index].n_participantes++;
