@@ -1,3 +1,9 @@
+/*
+ * File: proj1.c
+ * Author: Antonio Romeu (92427)
+ * Description: A program for scheduling meetings in C
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -227,20 +233,11 @@ void sortL() {
     for (i = 1; i < contador_eventos; i++) {
         temp = tab_eventos[i];
         j = i - 1;
-        if (tab_eventos[j].inicio == temp.inicio) {
-            while (j >= 0 && tab_eventos[j].sala > temp.sala) {
-                tab_eventos[j + 1] = tab_eventos[j];
-                j -= 1;
-            }
-            tab_eventos[j + 1] = temp;
+        while ((j >= 0 && tab_eventos[j].inicio == temp.inicio && tab_eventos[j].sala > temp.sala) || (j >= 0 && tab_eventos[j].inicio > temp.inicio)) {
+            tab_eventos[j + 1] = tab_eventos[j];
+            j -= 1;
         }
-        else {
-            while (j >= 0 && tab_eventos[j].inicio > temp.inicio) {
-                tab_eventos[j + 1] = tab_eventos[j];
-                j -= 1;
-            }
-            tab_eventos[j + 1] = temp;
-        }
+        tab_eventos[j + 1] = temp;
     }
 }
 
@@ -250,21 +247,12 @@ void sortS(){
     for (i = 1; i < contador_eventos; i++) { 
         temp = tab_eventos[i];
         j = i - 1;
-        if (tab_eventos[j].horario.amd == temp.horario.amd) {
-            while (j >= 0 && tab_eventos[j].inicio > temp.inicio) {
-                tab_eventos[j + 1] = tab_eventos[j];
-                j -= 1;
-            }
-            tab_eventos[j + 1] = temp;
+        while ((j >= 0 && tab_eventos[j].horario.amd == temp.horario.amd && tab_eventos[j].inicio > temp.inicio) || (j >= 0 && tab_eventos[j].horario.amd > temp.horario.amd)) {
+            tab_eventos[j + 1] = tab_eventos[j];
+            j -= 1;
         }
-        else {
-            while (j >= 0 && tab_eventos[j].horario.amd > temp.horario.amd) {
-                tab_eventos[j + 1] = tab_eventos[j];
-                j -= 1;
-            }
-            tab_eventos[j + 1] = temp;
+        tab_eventos[j + 1] = temp;
         }
-    }
 }
 
 void listaEventos() {
