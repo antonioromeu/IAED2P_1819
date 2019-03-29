@@ -28,13 +28,28 @@ typedef struct {
     data horario;
 } evento;
 
-evento tab_eventos[MAX_LEN], nulo;
+evento tab_eventos[MAX_LEN];
 int contador_eventos = 0;
 
-void inicializaTabelas() {
+void inicializaTabela() {
     int i;
     for (i = 0; i < MAX_LEN; i++) {
-        tab_eventos[i] = nulo;
+        tab_eventos[i].descricao[0] = '\0';
+        tab_eventos[i].responsavel[0] = '\0';
+        tab_eventos[i].participantes_str[0] = '\0';
+        tab_eventos[i].responsavel[0] = '\0';
+        tab_eventos[i].responsavel[0] = '\0';
+        tab_eventos[i].data = 0;
+        tab_eventos[i].inicio = 0;
+        tab_eventos[i].duracao = 0;
+        tab_eventos[i].sala = 0;
+        tab_eventos[i].n_participantes = 0;
+        tab_eventos[i].horario.dia = 0;
+        tab_eventos[i].horario.mes = 0;
+        tab_eventos[i].horario.ano = 0;
+        tab_eventos[i].horario.amd = 0;
+        tab_eventos[i].horario.hora = 0;
+        tab_eventos[i].horario.minutos = 0;
     }
 }
 
@@ -258,7 +273,7 @@ void sortS(){
 void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
-        if (strcmp(tab_eventos[i].descricao, nulo.descricao) != 0) {
+        if (tab_eventos[i].descricao[0] != '\0') {
             printf("%s %02d%02d%02d %02d%02d %d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
             imprimeParticipantes(tab_eventos[i]);
         }
@@ -394,7 +409,7 @@ int main() {
     char descricao[DESCRICAO], responsavel[PESSOA_RESP], participante[PESSOA_RESP], novo_participante[PESSOA_RESP], participantes[LST_PARTICIPANTES];
     int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0, nova_duracao = 0, nova_sala = 0;
     evento a;
-    inicializaTabelas();
+    inicializaTabela();
     while (TRUE) {
         switch(getchar()) {
         case 'a' :
