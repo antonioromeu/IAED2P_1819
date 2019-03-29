@@ -13,29 +13,16 @@
 #define TRUE 1
 
 typedef struct {
-    int dia;
-    int mes;
-    int ano;
-    int amd;
-    int hora;
-    int minutos;
+    int dia, mes, ano, amd, hora, minutos;
 } data;
 
 typedef struct {
-    char descricao[DESCRICAO];
-    char responsavel[PESSOA_RESP];
-    char participantes_str[LST_PARTICIPANTES];
-    char participantes[3][PESSOA_RESP];
-    int data;
-    int inicio;
-    int duracao;
-    int sala;
-    int n_participantes;
+    char descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes_str[LST_PARTICIPANTES], participantes[3][PESSOA_RESP];
+    int data, inicio, duracao, sala, n_participantes;
     data horario;
 } evento;
 
-evento tab_eventos[MAX_LEN];
-evento nulo;
+evento tab_eventos[MAX_LEN], nulo;
 int contador_eventos = 0;
 
 void inicializaTabelas() {
@@ -234,6 +221,29 @@ void mudaSala(char descricao[], int sala) {
     tab_eventos[index].sala = sala;
 }
 
+void ordenaEventos() {
+    int index = contador_eventos - 1;
+    evento temp;
+    for (; index > 0; index--) {
+        if (tab_eventos[index - 1].horario.amd > tab_eventos[index].horario.amd) {
+            temp = tab_eventos[index];
+            tab_eventos[index] = tab_eventos[index - 1];
+            tab_eventos[index - 1] = temp;
+        }
+        else if (inicioParaMinutos(tab_eventos[index - 1].inicio) > inicioParaMinutos(tab_eventos[index].inicio)) {
+            temp = tab_eventos[index];
+            tab_eventos[index] = tab_eventos[index - 1];
+            tab_eventos[index - 1] = temp;
+        }
+        else if (inicioParaMinutos(tab_eventos[index - 1].inicio) == inicioParaMinutos(tab_eventos[index].inicio) && tab_eventos[index - 1].sala > tab_eventos[index].sala) {
+            temp = tab_eventos[index];
+            tab_eventos[index] = tab_eventos[index - 1];
+            tab_eventos[index - 1] = temp;
+        }
+        else break;
+    }
+}
+
 void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
@@ -369,29 +379,6 @@ void removeParticipante(char descricao[], char participante[]) {
     tab_eventos[index].n_participantes--;
 }
 
-void ordenaEventos() {
-    int index = contador_eventos - 1;
-    evento temp;
-    for (; index > 0; index--) {
-        if (tab_eventos[index - 1].horario.amd > tab_eventos[index].horario.amd) {
-            temp = tab_eventos[index];
-            tab_eventos[index] = tab_eventos[index - 1];
-            tab_eventos[index - 1] = temp;
-        }
-        else if (inicioParaMinutos(tab_eventos[index - 1].inicio) > inicioParaMinutos(tab_eventos[index].inicio)) {
-            temp = tab_eventos[index];
-            tab_eventos[index] = tab_eventos[index - 1];
-            tab_eventos[index - 1] = temp;
-        }
-        else if (inicioParaMinutos(tab_eventos[index - 1].inicio) == inicioParaMinutos(tab_eventos[index].inicio) && tab_eventos[index - 1].sala > tab_eventos[index].sala) {
-            temp = tab_eventos[index];
-            tab_eventos[index] = tab_eventos[index - 1];
-            tab_eventos[index - 1] = temp;
-        }
-        else break;
-    }
-}
-
 int main() {
     char descricao[DESCRICAO], responsavel[PESSOA_RESP], participante[PESSOA_RESP], novo_participante[PESSOA_RESP], participantes[LST_PARTICIPANTES];
     int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0, nova_duracao = 0, nova_sala = 0;
@@ -445,7 +432,7 @@ int main() {
             return 0;
             break;
         }
-        getchar(); /* le o \n */
+        getchar();
     }
    return 0;
 }
