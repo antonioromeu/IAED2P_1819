@@ -1,7 +1,7 @@
 /*
  * File: proj1.c
  * Author: Antonio Romeu (92427)
- * Description: A program for scheduling meetings in C
+ * Description: A program for scheduling meetings and booking rooms in C
 */
 
 #include <stdio.h>
@@ -12,8 +12,6 @@
 #define DESCRICAO 64
 #define PESSOA_RESP 64
 #define LST_PARTICIPANTES 194
-#define MAX_SALAS 10
-#define MAX_EVENTOS 100
 #define MAX_LEN 1000
 #define FALSE 0
 #define TRUE 1
@@ -37,8 +35,9 @@ void inicializaTabela() {
         tab_eventos[i].descricao[0] = '\0';
         tab_eventos[i].responsavel[0] = '\0';
         tab_eventos[i].participantes_str[0] = '\0';
-        tab_eventos[i].responsavel[0] = '\0';
-        tab_eventos[i].responsavel[0] = '\0';
+        tab_eventos[i].participantes[0][0] = '\0';
+        tab_eventos[i].participantes[1][0] = '\0';
+        tab_eventos[i].participantes[2][0] = '\0';
         tab_eventos[i].data = 0;
         tab_eventos[i].inicio = 0;
         tab_eventos[i].duracao = 0;
@@ -104,7 +103,7 @@ int sobreposto(evento a, evento b) {
 int verificaSobreposicaoSalas(evento a) {
     int i, res = 0;
     for (i = 0; i < contador_eventos; i++) {
-        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (a.sala == tab_eventos[i].sala)) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (a.sala == tab_eventos[i].sala) && (a.sala != 0)) {
             printf("Impossivel agendar evento %s. Sala%d ocupada.\n", a.descricao, a.sala);
             res += 1;
         }
@@ -115,7 +114,7 @@ int verificaSobreposicaoSalas(evento a) {
 int verificaSobreposicaoResponsavel(evento a) {
     int i, k, res = 0;
     for (i = 0; i < contador_eventos; i++) {
-        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (strcmp(a.responsavel, tab_eventos[i].responsavel) == 0)) {
+        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (strcmp(a.responsavel, tab_eventos[i].responsavel) == 0) && (a.responsavel[0] != '\0')) {
             printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
             res += 1;
         }
@@ -124,7 +123,7 @@ int verificaSobreposicaoResponsavel(evento a) {
     for (i = 0; i < contador_eventos; i++) {
         if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && sobreposto(a, tab_eventos[i])) {
             for (k = 0; k < 3; k++) {
-                if (strcmp(a.responsavel, tab_eventos[i].participantes[k]) == 0) {
+                if ((strcmp(a.responsavel, tab_eventos[i].participantes[k]) == 0) && (a.responsavel[0] != '\0')) {
                     printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
                     res += 1;
                 }
@@ -151,7 +150,7 @@ int verificaSobreposicaoParticipantes(evento a) {
         if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i]))) {
             for (j = 0; j < 3; j++) {
                 for (k = 0; k < 3; k++) {
-                    if (strcmp(a.participantes[j], tab_eventos[i].participantes[k]) == 0 && (a.participantes[j][0] != '\0')) {
+                    if ((strcmp(a.participantes[j], tab_eventos[i].participantes[k]) == 0) && (a.participantes[j][0] != '\0')) {
                         printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
                         res += 1;
                     }
