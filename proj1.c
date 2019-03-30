@@ -10,20 +10,15 @@
 #include <math.h>
 
 #define DESCRICAO 64
-#define PESSOA_RESP 64
+#define NOME 64
 #define LST_PARTICIPANTES 194
 #define MAX_LEN 1000
 #define FALSE 0
 #define TRUE 1
 
 typedef struct {
-    int dia, mes, ano, amd, hora, minutos;
-} data;
-
-typedef struct {
-    char descricao[DESCRICAO], responsavel[PESSOA_RESP], participantes_str[LST_PARTICIPANTES], participantes[3][PESSOA_RESP];
-    int data, inicio, duracao, sala, n_participantes;
-    data horario;
+    char descricao[DESCRICAO], responsavel[NOME], participantes[3][NOME];
+    int data, inicio, duracao, sala, n_participantes, amd;
 } evento;
 
 evento tab_eventos[MAX_LEN];
@@ -34,21 +29,15 @@ void inicializaTabela() {
     for (i = 0; i < MAX_LEN; i++) {
         tab_eventos[i].descricao[0] = '\0';
         tab_eventos[i].responsavel[0] = '\0';
-        tab_eventos[i].participantes_str[0] = '\0';
         tab_eventos[i].participantes[0][0] = '\0';
         tab_eventos[i].participantes[1][0] = '\0';
         tab_eventos[i].participantes[2][0] = '\0';
         tab_eventos[i].data = 0;
+        tab_eventos[i].amd = 0;
         tab_eventos[i].inicio = 0;
         tab_eventos[i].duracao = 0;
         tab_eventos[i].sala = 0;
         tab_eventos[i].n_participantes = 0;
-        tab_eventos[i].horario.dia = 0;
-        tab_eventos[i].horario.mes = 0;
-        tab_eventos[i].horario.ano = 0;
-        tab_eventos[i].horario.amd = 0;
-        tab_eventos[i].horario.hora = 0;
-        tab_eventos[i].horario.minutos = 0;
     }
 }
 
@@ -95,8 +84,7 @@ void imprimeParticipantes(evento a) {
 }
 
 int sobreposto(evento a, evento b) {
-    if (transformaData(a) != transformaData(b)) return FALSE;
-    else if (inicioParaMinutos(a.inicio) > (inicioParaMinutos(b.inicio) + b.duracao - 1) || inicioParaMinutos(b.inicio) > (inicioParaMinutos(a.inicio) + a.duracao - 1)) return FALSE;
+    if ((transformaData(a) != transformaData(b)) || (inicioParaMinutos(a.inicio) > (inicioParaMinutos(b.inicio) + b.duracao - 1)) || (inicioParaMinutos(b.inicio) > (inicioParaMinutos(a.inicio) + a.duracao - 1))) return FALSE;
     return TRUE;
 }
 
@@ -195,14 +183,8 @@ evento criaEvento(char descricao[], int data, int inicio, int duracao, int sala,
     a.duracao = duracao;
     a.sala = sala;
     strcpy(a.responsavel, responsavel);
-    strcpy(a.participantes_str, participantes);
     a = separaParticipantes(a, participantes);
-    a.horario.amd = transformaData(a);
-    a.horario.dia = a.horario.amd % 100;
-    a.horario.mes = (a.horario.amd % 10000) / 100;
-    a.horario.ano = a.horario.amd / 10000;
-    a.horario.minutos = a.inicio % 100;
-    a.horario.hora = a.inicio / 100;
+    a.amd = transformaData(a);
     return a;
 }
 
@@ -213,7 +195,7 @@ void adicionaEvento(evento a) {
     res += verificaSobreposicaoResponsavel(a);
     res += verificaSobreposicaoParticipantes(a);
     if (res != 0) return;
-    else tab_eventos[contador_eventos] = a;
+    tab_eventos[contador_eventos] = a;
 }
 
 int procuraEvento(char descricao[]) {
@@ -228,7 +210,7 @@ void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
         if (tab_eventos[i].descricao[0] != '\0') {
-            printf("%s %02d%02d%02d %02d%02d %d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
+            printf("%s %08d %04d %d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].data, tab_eventos[i].inicio, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
             imprimeParticipantes(tab_eventos[i]);
         }
     }
@@ -252,7 +234,7 @@ void listaSala(int sala) {
     int i = 0;
     for (; i < contador_eventos; i++) {
         if (tab_eventos[i].sala == sala) {
-            printf("%s %02d%02d%02d %02d%02d %d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].horario.dia, tab_eventos[i].horario.mes, tab_eventos[i].horario.ano, tab_eventos[i].horario.hora, tab_eventos[i].horario.minutos, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
+            printf("%s %08d %04d %d Sala%d %s\n*", tab_eventos[i].descricao, tab_eventos[i].data, tab_eventos[i].inicio, tab_eventos[i].duracao, tab_eventos[i].sala, tab_eventos[i].responsavel);
             imprimeParticipantes(tab_eventos[i]);
         }
     }
@@ -264,7 +246,7 @@ void sortS(){
     for (i = 1; i < contador_eventos; i++) { 
         temp = tab_eventos[i];
         j = i - 1;
-        while ((j >= 0 && tab_eventos[j].horario.amd == temp.horario.amd && tab_eventos[j].inicio > temp.inicio) || (j >= 0 && tab_eventos[j].horario.amd > temp.horario.amd)) {
+        while ((j >= 0 && tab_eventos[j].amd == temp.amd && tab_eventos[j].inicio > temp.inicio) || (j >= 0 && tab_eventos[j].amd > temp.amd)) {
             tab_eventos[j + 1] = tab_eventos[j];
             j -= 1;
         }
@@ -284,13 +266,6 @@ void apagaEvento(char descricao[]) {
     else printf("Evento %s inexistente.\n", descricao);
 }
 
-void mudaInicio(char descricao[], int inicio) {
-    int index = procuraEvento(descricao);
-    tab_eventos[index].horario.minutos = inicio % 100;
-    tab_eventos[index].horario.hora = inicio / 100;
-    tab_eventos[index].inicio = inicio;
-}
-
 void alteraInicio(char descricao[], int novo_inicio) {    
     int res = 0, index;
     evento temp;
@@ -303,14 +278,9 @@ void alteraInicio(char descricao[], int novo_inicio) {
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) return;
-        mudaInicio(descricao, novo_inicio);
+        tab_eventos[index].inicio = novo_inicio;
     }
     else printf("Evento %s inexistente.\n", descricao);
-}
-
-void mudaDuracao(char descricao[], int duracao) {
-    int index = procuraEvento(descricao);
-    tab_eventos[index].duracao = duracao;
 }
 
 void alteraDuracao(char descricao[], int nova_duracao) {
@@ -325,14 +295,9 @@ void alteraDuracao(char descricao[], int nova_duracao) {
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) return;
-        mudaDuracao(descricao, nova_duracao);
+        tab_eventos[index].duracao = nova_duracao;
     }
     else printf("Evento %s inexistente.\n", descricao);
-}
-
-void mudaSala(char descricao[], int sala) {
-    int index = procuraEvento(descricao);
-    tab_eventos[index].sala = sala;
 }
 
 void alteraSala(char descricao[], int nova_sala) {
@@ -347,14 +312,13 @@ void alteraSala(char descricao[], int nova_sala) {
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) return;
-        mudaSala(descricao, nova_sala);
+        tab_eventos[index].sala = nova_sala;
     }
     else printf("Evento %s inexistente.\n", descricao);
 }
 
 void adicionaParticipante(char descricao[], char participante[]) {
     int index, i, res = 0;
-    char copia[PESSOA_RESP+1];
     evento temp;
     index = procuraEvento(descricao);
     for (i = 0; i < 3; i++) {
@@ -375,9 +339,6 @@ void adicionaParticipante(char descricao[], char participante[]) {
     res += verificaSobreposicaoParticipantes(temp);
     if (res != 0) return;
     strcpy(tab_eventos[index].participantes[tab_eventos[index].n_participantes], participante);
-    copia[0] = ' ';
-    strcat(copia, participante);
-    strcat(tab_eventos[index].participantes_str, copia);
     tab_eventos[index].n_participantes++;
 }
 
@@ -405,7 +366,7 @@ void removeParticipante(char descricao[], char participante[]) {
 }
 
 int main() {
-    char descricao[DESCRICAO], responsavel[PESSOA_RESP], participante[PESSOA_RESP], novo_participante[PESSOA_RESP], participantes[LST_PARTICIPANTES];
+    char descricao[DESCRICAO], responsavel[NOME], participante[NOME], novo_participante[NOME], participantes[LST_PARTICIPANTES];
     int data = 0, inicio = 0, duracao = 0, sala = 0, novo_inicio = 0, nova_duracao = 0, nova_sala = 0;
     evento a;
     inicializaTabela();
