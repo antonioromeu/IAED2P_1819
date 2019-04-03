@@ -1,7 +1,7 @@
 /*
  * File: proj1.c
  * Author: Antonio Romeu (92427)
- * Description: A program for scheduling meetings and booking rooms in C
+ * Description: A program for scheduling meetings and booking rooms in C.
 */
 
 #include <stdio.h>
@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+/* Maximum numbers of values stored. */
 #define DESCRICAO 64
 #define NOME 64
 #define LST_PARTICIPANTES 194
@@ -16,14 +17,18 @@
 #define FALSE 0
 #define TRUE 1
 
+/* Struct of evento. */
 typedef struct {
     char descricao[DESCRICAO], responsavel[NOME], participantes[3][NOME];
     int data, inicio, duracao, sala, n_participantes, amd;
 } evento;
 
+/* Array of structs. */
 evento tab_eventos[MAX_LEN];
+/* Total numbers of events. */
 int contador_eventos = 0;
 
+/* Inicializing the array of structs. */
 void inicializaTabela() {
     int i;
     for (i = 0; i < MAX_LEN; i++) {
@@ -41,6 +46,7 @@ void inicializaTabela() {
     }
 }
 
+/* Transforms inicio (hour and minutes) to minutes, between 1 and 1440. */
 int inicioParaMinutos(int inicio) {
     int minutos, horas;
     minutos = inicio % 100;
@@ -50,12 +56,14 @@ int inicioParaMinutos(int inicio) {
     return minutos;
 }
 
+/* Converts the date of an event to yyyymmdd */
 int transformaData(evento a) {
     int amd = 0;
     amd = ((a.data % 10000) * 10000) + (((a.data / 10000) % 100) * 100) + (a.data / 1000000);
     return amd;
 }
 
+/* Receives a string of attendants and separates them into a bidimensional matrix. */
 evento separaParticipantes(evento a, char participantes[]) {
     int i = 0, p = 0, j = 0;
     for (; participantes[i] != '\0' && i < LST_PARTICIPANTES; i++, j++) {
@@ -75,6 +83,7 @@ evento separaParticipantes(evento a, char participantes[]) {
     return a;
 }
 
+/* Prints all the attendats of an event. */
 void imprimeParticipantes(evento a) {
     int i;
     for (i = 0; i < 3; i++) {
@@ -83,22 +92,25 @@ void imprimeParticipantes(evento a) {
     printf("\n");
 }
 
+/* Verifies if two events are overlapped. */
 int sobreposto(evento a, evento b) {
     if ((transformaData(a) != transformaData(b)) || (inicioParaMinutos(a.inicio) > (inicioParaMinutos(b.inicio) + b.duracao - 1)) || (inicioParaMinutos(b.inicio) > (inicioParaMinutos(a.inicio) + a.duracao - 1))) return FALSE;
     return TRUE;
 }
 
+/* Verifies if an event is overlapping another in the array. */
 int verificaSobreposicaoSalas(evento a) {
     int i, res = 0;
     for (i = 0; i < contador_eventos; i++) {
         if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i])) && (a.sala == tab_eventos[i].sala) && (a.sala != 0)) {
             printf("Impossivel agendar evento %s. Sala%d ocupada.\n", a.descricao, a.sala);
-            res += 1;
+            return TRUE;
         }
     }
     return res;
 }
 
+/* Verifies if a responsible of an event is attending another event at the same time. */
 int verificaSobreposicaoResponsavel(evento a) {
     int i, k, res = 0;
     for (i = 0; i < contador_eventos; i++) {
@@ -121,6 +133,7 @@ int verificaSobreposicaoResponsavel(evento a) {
     return res;
 }
 
+/* Verifies if any of the attendants is attending another event at the same time. */
 int verificaSobreposicaoParticipantes(evento a) {
     int i, k, j, res = 0;
     for (i = 0; i < contador_eventos; i++) {
@@ -149,6 +162,7 @@ int verificaSobreposicaoParticipantes(evento a) {
     return res;
 }
 
+/* Verifies if the attendant that the user is trying to add is avalible to participate in the event. */
 int verificaAdicionaParticipante(char participante[], evento a) {
     int i = 0, k = 0;
     for (i = 0; i < contador_eventos; i++) {
@@ -174,6 +188,7 @@ int verificaAdicionaParticipante(char participante[], evento a) {
     return 0;
 }
 
+/* Creates an event. */
 evento criaEvento(char descricao[], int data, int inicio, int duracao, int sala, char responsavel[], char participantes[]) {
     evento a;
     strcpy(a.descricao, descricao);
@@ -188,6 +203,7 @@ evento criaEvento(char descricao[], int data, int inicio, int duracao, int sala,
     return a;
 }
 
+/* Verifies if the first event is prior to the second one. */
 int less(evento a, evento b) {
     if (a.amd < b.amd) return TRUE;
     else if (a.amd == b.amd) {
@@ -199,6 +215,7 @@ int less(evento a, evento b) {
     return FALSE;
 }
 
+/* Sorts the array of structs. */
 void sort() {
     int i, j, l;
     evento temp;
@@ -214,6 +231,7 @@ void sort() {
     }
 }
 
+/* Adds one event to the array after doing the verifications. */
 void adicionaEvento(evento a) {
     int res = 0;
     res += verificaSobreposicaoSalas(a);
@@ -226,6 +244,7 @@ void adicionaEvento(evento a) {
     sort();
 }
 
+/* Returns the index of the event with the description that is given (return -1 if the event does not exist). */
 int procuraEvento(char descricao[]) {
     int i = 0;
     for (; i < contador_eventos; i++) {
@@ -234,6 +253,7 @@ int procuraEvento(char descricao[]) {
     return -1;
 }
 
+/* Prints all the events of the array and its attendants. */
 void listaEventos() {
     int i = 0;
     for (; i < contador_eventos; i++) {
@@ -244,6 +264,7 @@ void listaEventos() {
     }
 }
 
+/* Prints all the events in a given room and its attendants. */
 void listaSala(int sala) {
     int i = 0;
     for (; i < contador_eventos; i++) {
@@ -254,6 +275,7 @@ void listaSala(int sala) {
     }
 }
 
+/* Erases an event from the array. */
 void apagaEvento(char descricao[]) {
     int index;
     index = procuraEvento(descricao);
@@ -266,6 +288,7 @@ void apagaEvento(char descricao[]) {
     else printf("Evento %s inexistente.\n", descricao);
 }
 
+/* Changes the start of an event after doing the verifications. */
 void alteraInicio(char descricao[], int novo_inicio) {    
     int res = 0, index;
     evento temp, copia;
@@ -291,6 +314,7 @@ void alteraInicio(char descricao[], int novo_inicio) {
     else printf("Evento %s inexistente.\n", descricao);
 }
 
+/* Changes the duration of an event after doing the verifications. */
 void alteraDuracao(char descricao[], int nova_duracao) {
     int res = 0, index;
     evento temp, copia;
@@ -316,6 +340,7 @@ void alteraDuracao(char descricao[], int nova_duracao) {
     else printf("Evento %s inexistente.\n", descricao);
 }
 
+/* Changes the room of an event after doing the verifications. */
 void alteraSala(char descricao[], int nova_sala) {
     int res = 0, index;
     evento temp, copia;
@@ -330,20 +355,15 @@ void alteraSala(char descricao[], int nova_sala) {
             adicionaEvento(copia);            
             return;
         }
-        res += verificaSobreposicaoResponsavel(temp);
-        res += verificaSobreposicaoParticipantes(temp);
-        if (res != 0) {
-            adicionaEvento(copia);
-            return;
-        }
         adicionaEvento(temp);
     }
     else printf("Evento %s inexistente.\n", descricao);
 }
 
+/* Verifies if it is possible to add an attendant to an event and, if it is, adds them. */
 void adicionaParticipante(char descricao[], char participante[]) {
     int index, i, res = 0;
-    evento temp;
+    evento temp, copia;
     index = procuraEvento(descricao);
     for (i = 0; i < 3; i++) {
         if (strcmp(tab_eventos[index].participantes[i], participante) == 0) return;
@@ -356,16 +376,20 @@ void adicionaParticipante(char descricao[], char participante[]) {
         printf("Impossivel adicionar participante. Evento %s ja tem 3 participantes.\n", descricao);
         return;
     }
+    copia = tab_eventos[index];
     temp = tab_eventos[index];
+    apagaEvento(descricao);
+    strcpy(temp.participantes[temp.n_participantes], participante);
     res += verificaAdicionaParticipante(participante, temp);
-    if (res != 0) return;
-    res += verificaSobreposicaoResponsavel(temp);
-    res += verificaSobreposicaoParticipantes(temp);
-    if (res != 0) return;
-    strcpy(tab_eventos[index].participantes[tab_eventos[index].n_participantes], participante);
+    if (res != 0) {
+        adicionaEvento(copia);
+        return;
+    }
+    adicionaEvento(temp);
     tab_eventos[index].n_participantes++;
 }
 
+/* Verifies if it is possible to remove an attendant of an event and, if it is, removes them. */
 void removeParticipante(char descricao[], char participante[]) {
     int i, index;
     index = procuraEvento(descricao);
@@ -402,7 +426,6 @@ int main() {
             adicionaEvento(a);
             break;
         case 'l' :
-            sort();
             listaEventos();
             break;
         case 's' :
@@ -437,7 +460,7 @@ int main() {
             return 0;
             break;
         }
-        getchar();
+        getchar(); /* Reads the \n. */
     }
    return 0;
 }
