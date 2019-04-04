@@ -118,9 +118,6 @@ int verificaSobreposicaoResponsavel(evento a) {
             printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.responsavel);
             res += 1;
         }
-    }
-
-    for (i = 0; i < contador_eventos; i++) {
         if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && sobreposto(a, tab_eventos[i])) {
             for (k = 0; k < 3; k++) {
                 if ((strcmp(a.responsavel, tab_eventos[i].participantes[k]) == 0)) {
@@ -143,13 +140,6 @@ int verificaSobreposicaoParticipantes(evento a) {
                     printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
                     res += 1;
                     }
-                }
-            }
-        }
-
-    for (i = 0; i < contador_eventos; i++) {
-        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && (sobreposto(a, tab_eventos[i]))) {
-            for (j = 0; j < 3; j++) {
                 for (k = 0; k < 3; k++) {
                     if ((strcmp(a.participantes[j], tab_eventos[i].participantes[k]) == 0) && (a.participantes[j][0] != '\0')) {
                         printf("Impossivel agendar evento %s. Participante %s tem um evento sobreposto.\n", a.descricao, a.participantes[j]);
@@ -171,11 +161,6 @@ int verificaAdicionaParticipante(char participante[], evento a) {
                 printf("Impossivel adicionar participante. Participante %s tem um evento sobreposto.\n", participante);
                 return 1;
             }
-        }
-    }
-
-    for (i = 0; i < contador_eventos; i++) {
-        if ((strcmp(a.descricao, tab_eventos[i].descricao) != 0) && sobreposto(a, tab_eventos[i])) {
             for (k = 0; k < 3; k++) {
                 if (strcmp(tab_eventos[i].participantes[k], participante) == 0) {
                     printf("Impossivel adicionar participante. Participante %s tem um evento sobreposto.\n", participante);
@@ -184,7 +169,6 @@ int verificaAdicionaParticipante(char participante[], evento a) {
             }
         }
     }
-
     return 0;
 }
 
