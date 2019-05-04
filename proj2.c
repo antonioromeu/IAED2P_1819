@@ -7,57 +7,53 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "Item.h"
+#include "Item.c"
+#include "tree.c"
 
-#define TRUE 1
 #define FALSE 0
+#define TRUE 1
 #define MAX_NAME 1023
 #define MAX_EMAIL 511
 #define MAX_PART 509
-#define MAX_NUM 63
+#define MAX_NUMBER 63
 
-typedef struct node {
-    Item item;
-    struct node *l;
-    struct node *r;
-} *link;
-
-/*
-node *criaContacto(char *nome, char *email, char *num) {}
-
-list *adicionaContacto(node *contacto) {}
+link *treeHead;
 
 int main() {
-    char *nome = (char*) malloc(sizeof(char) * MAX_NOME);
+    char *name = (char*) malloc(sizeof(char) * MAX_NAME);
     char *email = (char*) malloc(sizeof(char) * MAX_EMAIL);
-    char *num = (char*) malloc(sizeof(char) * MAX_NUM);
-    node *novo_contacto = NULL;
-    list *l = mk_list();
+    char *number = (char*) malloc(sizeof(char) * MAX_NUMBER);
     while (TRUE) {
+        Item newContact = NULL;
+        Item res = NULL;
+        treeHead = NULL;
         switch(getchar()) {
-        case 'a' :
-            scanf(" %[0-9a-zA-Z-_] %[0-9a-zA-Z-_.]+@[0-9a-zA-Z-_.] %[0-9\-]", nome, email, num);
-            novo_contacto = criaContacto(nome, email, num);
-            adicionaContacto(novo_contacto);
-            break;
-
-        case 'l' :
-            break;
-        case 'p' :
-            break;
-        case 'r' :
-            break;
-        case 'e' :
-            break;
-        case 'c' :
-            break;
-
-        case 'x' :
-            return 0;
-            break;
-        }
-        getchar(); /* Reads the \n
+            case 'a' :
+                scanf(" %s %s %s", name, email, number);
+                newContact = newItem(name, email, number);
+                visitItem(newContact);
+                STinsert(treeHead, newContact);
+                break;
+            case 'l' :
+                break;
+            case 'p' :
+                scanf(" %s", name);
+                res = STsearch(*treeHead, name);
+                if (res == NULL) printf("Nome inixistente.");
+                visitItem(res);
+                break;
+            case 'r' :
+                break;
+            case 'e' :
+                scanf(" %s %s", name, email);
+                break;
+            case 'c' :
+                break;
+            case 'x' :
+                return 0;
+                break;
+            }
+        getchar(); /*reads the \n*/
     }
    return 0;
 }
-*/

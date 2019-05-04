@@ -16,7 +16,5 @@ void deleteItem(Item a) {
 }
 
 void visitItem(Item a) {
-    printf("name: %s\n", a->name);
-    printf("email: %s\n", a->email);
-    printf("number: %s\n", a->number);
+    printf("%s %s %s\n", a->name, a->email, a->number);
 }

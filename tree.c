@@ -6,6 +6,8 @@ struct STnode {
     int height; /*keeps the height of the node*/
 };
 
+Item NULLitem = NULL;
+
 link NEW(Item item, link l, link r) {
     link x = (link) malloc(sizeof(struct STnode));
     x->item = item;
@@ -44,15 +46,15 @@ link rotR(link h) {
     return x;
 }
 
-link rotLR(link h) { /*rotação dupla esquerda direita*/
-    if (h==NULL) return h;
+link rotLR(link h) { /*double rotation left right*/
+    if (h == NULL) return h;
     h->l = rotL(h->l);
     return rotR(h);
 }
 
-link rotRL(link h) { /*rotação dupla direita esquerda*/
-    if (h==NULL) return h;
-    h->r=rotR(h->r);
+link rotRL(link h) { /*double rotation right left*/
+    if (h == NULL) return h;
+    h->r = rotR(h->r);
     return rotL(h);
 }
 
@@ -67,7 +69,7 @@ link AVLbalance(link h) {
     balanceFactor = Balance(h);
     if(balanceFactor > 1) {
         if (Balance(h->l) >= 0) h = rotR(h);
-        else h=rotLR(h);
+        else h = rotLR(h);
     }
     else if(balanceFactor <- 1) {
         if (Balance(h->r) <= 0) h = rotL(h);
@@ -81,20 +83,12 @@ link AVLbalance(link h) {
     return h;
 }
 
-void STinit(link *head) {
-    *head = NULL;
-}
-
 link insertR(link h, Item item) {
     if (h == NULL) return NEW(item, NULL, NULL);
     if (less(key(item), key(h->item))) h->l = insertR(h->l, item);
     else h->r = insertR(h->r, item);
     h = AVLbalance(h);
     return h;
-}
-
-void STinsert(link *head, Item item) {
-    *head = insertR(*head, item);
 }
 
 Item searchR(link h, Key v) {
@@ -104,21 +98,27 @@ Item searchR(link h, Key v) {
     else return searchR(h->r, v);
 }
 
-Item STsearch(link head, Key v) {
-    return searchR(head, v);
+link max(link h) {
+    if (h == NULL || h->r == NULL) return h;
+    else return max(h->r);
+}
+
+link min(link h) {
+  if (h == NULL || h->l == NULL) return h;
+  else return min(h->l);
 }
 
 link deleteR(link h, Key k) {
-    if (h==NULL) return h;
+    if (h == NULL) return h;
     else if (less(k, key(h->item))) h->l = deleteR(h->l, k);
     else if (less(key(h->item), k)) h->r = deleteR(h->r, k);
-    else { /* caso 3 */
+    else { /* case 3 */
         if (h->l != NULL && h->r != NULL) {
             link aux = max(h->l);
             {Item x; x = h->item; h->item = aux->item; aux->item = x;}
             h->l = deleteR(h->l, key(aux->item));
         }
-        else { /*casos 1 e 2*/
+        else { /*cases 1 and 2*/
             link aux = h;
             if (h->l == NULL && h->r == NULL) h = NULL;
             else if (h->l == NULL) h = h->r;
@@ -131,14 +131,35 @@ link deleteR(link h, Key k) {
     return h;
 }
 
-link max(link h) {
-    if (h == NULL || h->r == NULL) return h;
-    else return max(h->r);
-}
-
 int count(link h) {
     if (h == NULL) return 0;
-    else return count(h->r) + count(h->l) + 1;
+    else return (count(h->r) + count(h->l) + 1);
+}
+
+void sortR(link h, void (*visit)(Item)) {
+    if (h == NULL) return;
+    sortR(h->l, visit);
+    visit(h->item);
+    sortR(h->r, visit);
+}
+
+link freeR(link h) {
+    if (h == NULL) return h;
+    h->l = freeR(h->l);
+    h->r = freeR(h->r);
+    return deleteR(h, key(h->item));
+}
+
+void STinit(link *head) {
+    *head = NULL;
+}
+
+void STinsert(link *head, Item item) {
+    *head = insertR(*head, item);
+}
+
+Item STsearch(link head, Key v) {
+    return searchR(head, v);
 }
 
 int STcount(link head) {
@@ -149,22 +170,8 @@ void STdelete(link*head, Key k) {
     *head = deleteR(*head, k);
 }
 
-void sortR(link h, void (*visit)(Item)) {
-    if (h == NULL) return;
-    sortR(h->l, visit);
-    visit(h->item);
-    sortR(h->r, visit);
-}
-
 void STsort(link head, void (*visit)(Item)) {
     sortR(head, visit);
-}
-
-link freeR(link h) {
-    if (h == NULL) return h;
-    h->l = freeR(h->l);
-    h->r = freeR(h->r);
-    return deleteR(h, key(h->item));
 }
 
 void STfree(link *head) {

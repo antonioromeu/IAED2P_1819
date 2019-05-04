@@ -12,7 +12,7 @@
 typedef char *Key;
 
 typedef struct contact {
-    char *name, *email, *local, *domain, *number;
+    char *name, *email, *number;
 } *Item;
 
 Item newItem(char *name, char *email, char *number);
