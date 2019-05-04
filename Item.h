@@ -6,8 +6,8 @@
 #include <string.h>
 
 #define key(a) (a != NULL ? a->name : "")
-#define less(a,b) (strcmp(a,b)<0)
-#define eq(a,b) (strcmp(a,b)==0)
+#define less(a, b) (strcmp(a, b) < 0)
+#define eq(a, b) (strcmp(a, b) == 0)
 
 typedef char *Key;
 
