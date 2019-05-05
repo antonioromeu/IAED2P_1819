@@ -8,15 +8,6 @@ struct STnode {
 
 Item NULLitem = NULL;
 
-link NEW(Item item, link l, link r) {
-    link x = (link) malloc(sizeof(struct STnode));
-    x->item = item;
-    x->l = l;
-    x->r = r;
-    x->height = 1;
-    return x;
-}
-
 int height(link h) {
     if (h == NULL) return 0;
     return h->height;
@@ -83,6 +74,15 @@ link AVLbalance(link h) {
     return h;
 }
 
+link NEW(Item item, link l, link r) {
+    link x = (link) malloc(sizeof(struct STnode));
+    x->item = item;
+    x->l = l;
+    x->r = r;
+    x->height = 1;
+    return x;
+}
+
 link insertR(link h, Item item) {
     if (h == NULL) return NEW(item, NULL, NULL);
     if (less(key(item), key(h->item))) h->l = insertR(h->l, item);
@@ -103,11 +103,6 @@ link max(link h) {
     else return max(h->r);
 }
 
-link min(link h) {
-  if (h == NULL || h->l == NULL) return h;
-  else return min(h->l);
-}
-
 link deleteR(link h, Key k) {
     if (h == NULL) return h;
     else if (less(k, key(h->item))) h->l = deleteR(h->l, k);
@@ -115,7 +110,7 @@ link deleteR(link h, Key k) {
     else { /* case 3 */
         if (h->l != NULL && h->r != NULL) {
             link aux = max(h->l);
-            {Item x; x = h->item; h->item = aux->item; aux->item = x;}
+            { Item x; x = h->item; h->item = aux->item; aux->item = x; }
             h->l = deleteR(h->l, key(aux->item));
         }
         else { /*cases 1 and 2*/
@@ -148,6 +143,13 @@ link freeR(link h) {
     h->l = freeR(h->l);
     h->r = freeR(h->r);
     return deleteR(h, key(h->item));
+}
+
+void traverse(link h) {
+    if (h == NULL) return;
+    traverse(h->l);
+    visitItem(h->item);
+    traverse(h->r);
 }
 
 void STinit(link *head) {

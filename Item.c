@@ -1,10 +1,11 @@
 #include "Item.h"
 
-Item newItem(char *name, char *email, char *number) {
+Item newItem(char *name, char *email, char *number, int n) {
     Item x = (Item) malloc(sizeof(struct contact));
     x->name = strdup(name);
     x->email = strdup(email);
     x->number = strdup(number);
+    x->n = n;
     return x;
 }
 

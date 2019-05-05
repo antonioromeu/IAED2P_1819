@@ -7,6 +7,7 @@
 
 typedef struct STnode *link;
 
+void traverse(link);
 void STinit(link*);
 int STcount(link);
 Item STsearch(link, Key);
