@@ -5,18 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define key(a) (a != NULL ? a->n : -1)
-#define less(a, b) (a < b)
-#define eq(a, b) (a == b)
+#define key(a) (a != NULL ? a->name : "")
+#define less(a,b) (strcmp(a,b) < 0)
+#define eq(a,b) (strcmp(a,b) == 0)
 
-typedef long Key;
+typedef char *Key;
 
 typedef struct contact {
-    char *name, *email, *number;
-    long n;
+    char *name, *local, *domain, *number;
 } *Item;
 
-Item newItem(char *name, char *email, char *number, int n);
+Item newItem(char *name, char *local, char *domain, char *number);
 void deleteItem(Item a);
 void visitItem(Item a);
 

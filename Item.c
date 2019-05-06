@@ -1,21 +1,22 @@
 #include "Item.h"
 
-Item newItem(char *name, char *email, char *number, int n) {
+Item newItem(char *name, char *local, char *domain, char *number) {
     Item x = (Item) malloc(sizeof(struct contact));
     x->name = strdup(name);
-    x->email = strdup(email);
+    x->local = strdup(local);
+    x->domain = strdup(domain);
     x->number = strdup(number);
-    x->n = n;
     return x;
 }
 
 void deleteItem(Item a) {
     free(a->name);
-    free(a->email);
+    free(a->local);
+    free(a->domain);
     free(a->number);
     free(a);
 }
 
 void visitItem(Item a) {
-    printf("%s %s %s\n", a->name, a->email, a->number);
+    printf("%s %s@%s %s\n", a->name, a->local, a->domain, a->number);
 }

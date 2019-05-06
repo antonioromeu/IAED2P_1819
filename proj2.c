@@ -17,33 +17,32 @@
 #define MAX_NUMBER 63
 
 link *treeHead;
-long cont = 0;
 
 int main() {
     char *name = (char*) malloc(sizeof(char) * MAX_NAME);
     char *email = (char*) malloc(sizeof(char) * MAX_EMAIL);
     char *number = (char*) malloc(sizeof(char) * MAX_NUMBER);
-    char *dominio = (char*) malloc(sizeof(char) * MAX_PART);
+    char *local = (char*) malloc(sizeof(char) * MAX_PART);
+    char *domain = (char*) malloc(sizeof(char) * MAX_PART);
     treeHead = (link*) malloc(sizeof(link));
     STinit(treeHead);
     while (TRUE) {
         Item newContact = NULL;
-        /*Item res = NULL;*/
+        Item res = NULL;
         switch(getchar()) {
             case 'a' :
-                scanf(" %s %s %s", name, email, number);
-                newContact = newItem(name, email, number, cont);
+                scanf(" %[0-9a-zA-Z-_] %[0-9a-zA-Z-_.]@%[0-9a-zA-Z-_.] %[0-9-]", name, local, domain, number);
+                newContact = newItem(name, local, domain, number);
                 STinsert(treeHead, newContact);
-                cont++;
                 break;
             case 'l' :
                 traverse(*treeHead);
                 break;
             case 'p' :
-                /*scanf(" %s", name);
+                scanf(" %s", name);
                 res = STsearch(*treeHead, name);
                 if (res == NULL) printf("Nome inixistente.");
-                visitItem(res);*/
+                visitItem(res);
                 break;
             case 'r' :
                 scanf(" %s", name);
@@ -52,7 +51,7 @@ int main() {
                 scanf(" %s %s", name, email);
                 break;
             case 'c' :
-                scanf(" %s", dominio);
+                scanf(" %s", domain);
                 break;
             case 'x' :
                 return 0;
