@@ -8,7 +8,7 @@
 
 typedef struct str_node {
     struct str_node *next, *previous;
-    Item contacto;
+    Item contact;
 } node;
 
 typedef struct {
@@ -18,5 +18,7 @@ typedef struct {
 list *mk_list();
 void free_list(list *l);
 void add_last(list *l, Item cont);
+void print_list(list *l);
+void free_node(list *l, Item cont);
 
 #endif

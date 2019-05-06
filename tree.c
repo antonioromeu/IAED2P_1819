@@ -145,13 +145,6 @@ link freeR(link h) {
     return deleteR(h, key(h->item));
 }
 
-void traverse(link h) {
-    if (h == NULL) return;
-    traverse(h->l);
-    visitItem(h->item);
-    traverse(h->r);
-}
-
 void STinit(link *head) {
     *head = NULL;
 }
