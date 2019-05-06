@@ -39,14 +39,15 @@ node *search_node(list *l, Item cont) {
     return NULL;
 }
 
-void free_node(list *l, Item cont) {
+list *free_node(list *l, Item cont) {
     node *n = search_node(l, cont);
-    if (l->head == NULL || n == NULL) return;
+    if (l->head == NULL || n == NULL) return l;
     if (l->head->contact == cont) l->head = l->head->next;
+    if (l->last->contact == cont) l->last = l->last->previous;
     if (n->next != NULL) n->next->previous = n->previous;
     if (n->previous != NULL) n->previous->next = n->next;
     free(n);
-    return; 
+    return l;
 } 
 
 void print_list(list *l) {

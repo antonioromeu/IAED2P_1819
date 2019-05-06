@@ -1,4 +1,4 @@
-#include "Item.h"
+#include "Contact.h"
 
 Item newItem(char *name, char *local, char *domain, char *number) {
     Item x = (Item) malloc(sizeof(struct contact));

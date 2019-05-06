@@ -19,7 +19,6 @@
 
 link *treeHead_C;
 list *listHead;
-link *treeHead_D;
 
 int main() {
     char *name = (char*) malloc(sizeof(char) * MAX_NAME);
@@ -36,8 +35,12 @@ int main() {
             case 'a' :
                 scanf(" %[0-9a-zA-Z_-] %[0-9a-zA-Z_.-]@%[0-9a-zA-Z_.-] %[0-9-]", name, local, domain, number);
                 newContact = newItem(name, local, domain, number);
-                STinsert(treeHead_C, newContact);
-                add_last(listHead, newContact);
+                res = STsearch(*treeHead_C, name);
+                if (res != NULL) printf("Nome existente.\n");
+                else {
+                    STinsert(treeHead_C, newContact);
+                    add_last(listHead, newContact);
+                }
                 break;
             case 'l' :
                 print_list(listHead);
@@ -45,23 +48,23 @@ int main() {
             case 'p' :
                 scanf(" %[0-9a-zA-Z_-]", name);
                 res = STsearch(*treeHead_C, name);
-                if (res == NULL) printf("Nome inixistente.");
+                if (res == NULL) printf("Nome inexistente.\n");
                 else visitItem(res);
                 break;
             case 'r' :
                 scanf(" %s", name);
                 res = STsearch(*treeHead_C, name);
-                if (res == NULL) printf("Nome inixistente.");
+                if (res == NULL) printf("Nome inexistente.\n");
                 else {
                     STdelete(treeHead_C, name);
-                    free_node(listHead, res);
+                    listHead = free_node(listHead, res);
                     deleteItem(res);
                 }
                 break;
             case 'e' :
                 scanf(" %[0-9a-zA-Z_-] %[0-9a-zA-Z_.-]@%[0-9a-zA-Z_.-]", name, local, domain);
                 res = STsearch(*treeHead_C, name);
-                if (res == NULL) printf("Nome inixistente.");
+                if (res == NULL) printf("Nome inexistente.\n");
                 else {
                     if ((strcmp(local, res->local) != 0) && (strcmp(domain, res->domain) != 0)) {
                         res->local = strdup(local);
@@ -80,7 +83,6 @@ int main() {
                 free(local);
                 free(domain);
                 STfree(treeHead_C);
-                STfree(treeHead_D);
                 return 0;
                 break;
             }
