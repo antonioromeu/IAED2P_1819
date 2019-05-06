@@ -28,20 +28,26 @@ void add_last(list *l, Item cont) {
     l->last = new_last;
 }
 
-/*
-link delete(link head, char* text) {
-    link t, prev;
-    for (t = head, prev = NULL; t != NULL; prev = t, t = t->next) {
-        if (strcmp(t->text, text) == 0) {
-            if (t == head) head = t->next;
-            else prev->next = t->next;
-            free(t->text);
-            free(t);
-        }
+node *search_node(list *l, Item cont) {
+    node *aux;
+    if (l == NULL || cont == NULL) return NULL;
+    aux = l->head;
+    while (aux != NULL) {
+        if (aux->contact == cont) return aux;
+        aux = aux->next;
     }
-    return head;
+    return NULL;
 }
-*/
+
+void free_node(list *l, Item cont) {
+    node *n = search_node(l, cont);
+    if (l->head == NULL || n == NULL) return;
+    if (l->head->contact == cont) l->head = l->head->next;
+    if (n->next != NULL) n->next->previous = n->previous;
+    if (n->previous != NULL) n->previous->next = n->next;
+    free(n);
+    return; 
+} 
 
 void print_list(list *l) {
     node *aux;

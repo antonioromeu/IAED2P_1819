@@ -19,6 +19,7 @@
 
 link *treeHead_C;
 list *listHead;
+link *treeHead_D;
 
 int main() {
     char *name = (char*) malloc(sizeof(char) * MAX_NAME);
@@ -49,10 +50,13 @@ int main() {
                 break;
             case 'r' :
                 scanf(" %s", name);
-                if (STsearch(*treeHead_C, name) == NULL) printf("Nome inixistente.");
+                res = STsearch(*treeHead_C, name);
+                if (res == NULL) printf("Nome inixistente.");
                 else {
                     STdelete(treeHead_C, name);
-                    
+                    free_node(listHead, res);
+                    deleteItem(res);
+                }
                 break;
             case 'e' :
                 scanf(" %[0-9a-zA-Z_-] %[0-9a-zA-Z_.-]@%[0-9a-zA-Z_.-]", name, local, domain);
@@ -76,6 +80,7 @@ int main() {
                 free(local);
                 free(domain);
                 STfree(treeHead_C);
+                STfree(treeHead_D);
                 return 0;
                 break;
             }

@@ -20,5 +20,6 @@ void free_list(list *l);
 void add_last(list *l, Item cont);
 void print_list(list *l);
 void free_node(list *l, Item cont);
+node *search_node(list *l, Item cont);
 
 #endif

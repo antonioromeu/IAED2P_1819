@@ -118,7 +118,6 @@ link deleteR(link h, Key k) {
             if (h->l == NULL && h->r == NULL) h = NULL;
             else if (h->l == NULL) h = h->r;
             else h = h->l;
-            deleteItem(aux->item);
             free(aux);
         }
     }
