@@ -1,4 +1,4 @@
-#include "list.h"
+#include "List.h"
 
 list *mk_list() {
     list *l = (list*) malloc(sizeof(list));
