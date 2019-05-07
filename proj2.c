@@ -9,6 +9,7 @@
 #include <string.h>
 #include "Tree.h"
 #include "List.h"
+#include "Hash.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -17,7 +18,8 @@
 #define MAX_PART 509
 #define MAX_NUMBER 63
 
-link *treeHead_C;
+link *treeHead;
+linkHash *hashHead;
 list *listHead;
 
 int main() {
@@ -25,8 +27,8 @@ int main() {
     char *number = (char*) malloc(sizeof(char) * MAX_NUMBER);
     char *local = (char*) malloc(sizeof(char) * MAX_PART);
     char *domain = (char*) malloc(sizeof(char) * MAX_PART);
-    treeHead_C = (link*) malloc(sizeof(link));
-    STinit(treeHead_C);
+    treeHead = (link*) malloc(sizeof(link));
+    STinit(treeHead);
     listHead = mk_list();
     while (TRUE) {
         Item newContact = NULL;
@@ -35,10 +37,10 @@ int main() {
             case 'a' :
                 scanf(" %[0-9a-zA-Z_-] %[0-9a-zA-Z_.-]@%[0-9a-zA-Z_.-] %[0-9-]", name, local, domain, number);
                 newContact = newItem(name, local, domain, number);
-                res = STsearch(*treeHead_C, name);
+                res = STsearch(*treeHead, name);
                 if (res != NULL) printf("Nome existente.\n");
                 else {
-                    STinsert(treeHead_C, newContact);
+                    STinsert(treeHead, newContact);
                     add_last(listHead, newContact);
                 }
                 break;
@@ -47,23 +49,23 @@ int main() {
                 break;
             case 'p' :
                 scanf(" %[0-9a-zA-Z_-]", name);
-                res = STsearch(*treeHead_C, name);
+                res = STsearch(*treeHead, name);
                 if (res == NULL) printf("Nome inexistente.\n");
                 else visitItem(res);
                 break;
             case 'r' :
                 scanf(" %s", name);
-                res = STsearch(*treeHead_C, name);
+                res = STsearch(*treeHead, name);
                 if (res == NULL) printf("Nome inexistente.\n");
                 else {
-                    STdelete(treeHead_C, name);
+                    STdelete(treeHead, name);
                     listHead = free_node(listHead, res);
                     deleteItem(res);
                 }
                 break;
             case 'e' :
                 scanf(" %[0-9a-zA-Z_-] %[0-9a-zA-Z_.-]@%[0-9a-zA-Z_.-]", name, local, domain);
-                res = STsearch(*treeHead_C, name);
+                res = STsearch(*treeHead, name);
                 if (res == NULL) printf("Nome inexistente.\n");
                 else {
                     if ((strcmp(local, res->local) != 0) && (strcmp(domain, res->domain) != 0)) {
@@ -82,7 +84,7 @@ int main() {
                 free(number);
                 free(local);
                 free(domain);
-                STfree(treeHead_C);
+                STfree(treeHead);
                 return 0;
                 break;
             }
