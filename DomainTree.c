@@ -1,9 +1,10 @@
 #include "DomainTree.h"
 
 ItemD newItemD(char *domain) {
-    ItemD x = (ItemD) malloc(sizeof(struct domain));;
-    x->domain = strdup(domain);
-    x->n = 0;
+    ItemD x = (ItemD) malloc(sizeof(struct domain));
+    x->domain = (char*) malloc(sizeof(char) * 509);    
+    strcpy(x->domain, domain);
+    x->n = 1;
     return x;
 }
 

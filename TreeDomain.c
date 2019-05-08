@@ -131,13 +131,6 @@ int countD(linkD h) {
     else return (countD(h->r) + countD(h->l) + 1);
 }
 
-void sortRD(linkD h, void (*visit)(ItemD)) {
-    if (h == NULL) return;
-    sortRD(h->l, visit);
-    visit(h->item);
-    sortRD(h->r, visit);
-}
-
 linkD freeRD(linkD h) {
     if (h == NULL) return h;
     h->l = freeRD(h->l);
@@ -163,10 +156,6 @@ int STDcount(linkD head) {
 
 void STDdelete(linkD*head, KeyD k) {
     *head = deleteRD(*head, k);
-}
-
-void STDsort(linkD head, void (*visit)(ItemD)) {
-    sortRD(head, visit);
 }
 
 void STDfree(linkD *head) {
