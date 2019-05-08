@@ -1,4 +1,4 @@
-#include "Contact.h"
+#include "ContactTree.h"
 
 Item newItem(char *name, char *local, char *domain, char *number) {
     Item x = (Item) malloc(sizeof(struct contact));

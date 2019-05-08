@@ -3,11 +3,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "Contact.h"
+#include "ContactTree.h"
 
 typedef struct STnode *link;
 
-void traverse(link);
 void STinit(link*);
 int STcount(link);
 Item STsearch(link, Key);

@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Contact.h"
+#include "ContactTree.h"
 
 typedef struct str_node {
     struct str_node *next, *previous;
     Item contact;
+    int n;
 } node;
 
 typedef struct {
