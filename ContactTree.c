@@ -2,10 +2,14 @@
 
 Item newItem(char *name, char *local, char *domain, char *number) {
     Item x = (Item) malloc(sizeof(struct contact));
-    x->name = strdup(name);
-    x->local = strdup(local);
-    x->domain = strdup(domain);
-    x->number = strdup(number);
+    x->name = (char*) malloc(sizeof(char) * 1023);
+    x->number = (char*) malloc(sizeof(char) * 63);
+    x->local = (char*) malloc(sizeof(char) * 509);
+    x->domain = (char*) malloc(sizeof(char) * 509);
+    strcpy(x->name, name);
+    strcpy(x->local, local);
+    strcpy(x->domain, domain);
+    strcpy(x->number, number);
     return x;
 }
 
