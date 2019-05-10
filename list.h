@@ -9,7 +9,6 @@
 typedef struct str_node {
     struct str_node *next, *previous;
     Item contact;
-    int n;
 } node;
 
 typedef struct {

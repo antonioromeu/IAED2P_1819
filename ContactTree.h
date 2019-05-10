@@ -9,13 +9,17 @@
 #define less(a, b) (strcmp(a, b) < 0)
 #define eq(a, b) (strcmp(a, b) == 0)
 
+#define MAX_NAME 1024
+#define MAX_PART 512
+#define MAX_NUMBER 64
+
 typedef char *Key;
 
 typedef struct contact {
-    char *name, *local, *domain, *number;
+    Key name, local, domain, number;
 } *Item;
 
-Item newItem(char *name, char *local, char *domain, char *number);
+Item newItem(Key name, Key local, Key domain, Key number);
 void deleteItem(Item a);
 void visitItem(Item a);
 
