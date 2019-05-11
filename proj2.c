@@ -5,7 +5,7 @@
 #include <string.h>
 #include "TreeContact.h"
 #include "List.h"
-/*#include "ListD.h"*/
+#include "ListD.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -14,12 +14,13 @@
 #define MAX_NUMBER 64
 
 link *treeContact;
-list *listHead;
-/*listD *listHeadDomain;*/
+list *listContacts;
+listD *listDomains;
 
 void commandA() {
     Item newContact = NULL;
-    /*nodeD newDomain = NULL;*/
+    Email newEmail = NULL;
+    nodeD *res = NULL;
     char *name = (char*) malloc(sizeof(char) * MAX_NAME);
     char *local = (char*) malloc(sizeof(char) * MAX_PART);
     char *domain = (char*) malloc(sizeof(char) * MAX_PART);
@@ -29,7 +30,13 @@ void commandA() {
     else {
         newContact = newItem(name, local, domain, number);
         STinsert(treeContact, newContact);
-        add_last(listHead, newContact);
+        add_last(listContacts, newContact);
+        res = search_nodeD(listDomains, domain);
+        if (res != NULL) res->information->n++;
+        else {    
+            newEmail = newDomain(domain);
+            add_lastD(listDomains, newEmail);
+        }
     }
     free(name);
     free(number);
@@ -49,19 +56,25 @@ void commandP() {
 
 void commandR() {
     Item res = NULL;
+    nodeD *new = NULL;
     char *name = (char*) malloc(sizeof(char) * MAX_NAME);
     scanf(" %[0-9a-zA-Z_-]", name);
     res = STsearch(*treeContact, name);
     if (res == NULL) printf("Nome inexistente.\n");
     else {
+        new = search_nodeD(listDomains, res->domain);
+        if (new->information->n == 1) listDomains = free_nodeD(listDomains, new->information);
+        else new->information->n--;
+        listContacts = free_node(listContacts, res);
         STdelete(treeContact, name);
-        listHead = free_node(listHead, res);
     }
     free(name);
 }
 
 void commandE() {
     Item res = NULL;
+    Email newEmail;
+    nodeD *newNode = NULL;
     char *name = (char*) malloc(sizeof(char) * MAX_NAME);
     char *local = (char*) malloc(sizeof(char) * MAX_PART);
     char *domain = (char*) malloc(sizeof(char) * MAX_PART);
@@ -69,52 +82,49 @@ void commandE() {
     res = STsearch(*treeContact, name);
     if (res == NULL) printf("Nome inexistente.\n");
     else {
+        newNode = search_nodeD(listDomains, res->domain);
+        if (newNode->information->n == 1) listDomains = free_nodeD(listDomains, newNode->information);
+        else newNode->information->n--;
         free(res->local);
         free(res->domain);
         res->local = (char*) malloc(strlen(local) + 1);
         res->domain = (char*) malloc(strlen(domain) + 1);
         strcpy(res->local, local);
         strcpy(res->domain, domain);
+        newNode = search_nodeD(listDomains, domain);
+        if (newNode != NULL) newNode->information->n++;
+        else {
+            newEmail = newDomain(domain);
+            add_lastD(listDomains, newEmail);
+        }
     }
     free(name);
     free(local);
     free(domain);
 }
 
-/*void commandC() {
+void commandC() {
+    nodeD *res;
     char *domain = (char*) malloc(sizeof(char) * MAX_PART);
-    nodeD *aux;
     scanf(" %[0-9a-zA-Z_.-]", domain);
-    aux = search_nodeD(listHeadDomain, domain);
-    printf("%s:%d", domain, aux->n);
-    free(domain);
-}*/
-
-void contDomains(list *l) {
-    int c = 0;
-    char *domain = (char*) malloc(sizeof(char) * MAX_PART);
-    node *aux, *n = l->head;
-    scanf(" %[0-9a-zA-Z_.-]", domain);
-    while (n != NULL) {
-        if (strcmp(n->contact->domain, domain) == 0) c++;
-        aux = n->next;
-        n = aux;
-    }
-    printf("%s:%d\n", domain, c);
+    res = search_nodeD(listDomains, domain);
+    if (res == NULL) printf("%s:0\n", domain);
+    else printf("%s:%d\n", domain, res->information->n);
     free(domain);
 }
 
 int main() {
     treeContact = (link*) malloc(sizeof(link));
     STinit(treeContact);
-    listHead = mk_list();
+    listContacts = mk_list();
+    listDomains = mk_listD();
     while (TRUE) {
         switch(getchar()) {
             case 'a' :
                 commandA();
                 break;
             case 'l' :
-                print_list(listHead);
+                print_list(listContacts);
                 break;
             case 'p' :
                 commandP();
@@ -126,14 +136,13 @@ int main() {
                 commandE();
                 break;
             case 'c' :
-                /*commandC();*/
-                contDomains(listHead);
+                commandC();
                 break;
             case 'x' :
                 STfree(treeContact);
                 free(treeContact);
-                free_list(listHead);
-                /*free_list(listHeadDomain);*/
+                free_list(listContacts);
+                free_listD(listDomains);
                 return 0;
                 break;
             }
