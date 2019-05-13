@@ -1,9 +1,11 @@
-#include "TreeContact.h"
+#include "Tree.h"
+
+/* Basic operations of binary trees */
 
 struct STnode {
     Item item;
     link l, r;
-    int height; /*keeps the height of the node*/
+    int height; /* Keeps the height of the node */
 };
 
 Item NULLitem = NULL;
@@ -37,19 +39,19 @@ link rotR(link h) {
     return x;
 }
 
-link rotLR(link h) { /*double rotation left right*/
+link rotLR(link h) { /* Double rotation left-right */
     if (h == NULL) return h;
     h->l = rotL(h->l);
     return rotR(h);
 }
 
-link rotRL(link h) { /*double rotation right left*/
+link rotRL(link h) { /* Double rotation right-left */
     if (h == NULL) return h;
     h->r = rotR(h->r);
     return rotL(h);
 }
 
-int Balance(link h) { /*balance factor*/
+int Balance(link h) { /* Balance factor */
     if(h == NULL) return 0;
     return (height(h->l) - height(h->r));
 }

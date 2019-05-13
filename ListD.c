@@ -1,5 +1,8 @@
 #include "ListD.h"
 
+/* Basic operations of linked list */
+
+/* Creates the struct Email based on the domain */
 Email newDomain(char *domain) {
     Email x = (Email) malloc(sizeof(struct email));
     x->domain = (char*) malloc(strlen(domain) + 1);
@@ -7,8 +10,6 @@ Email newDomain(char *domain) {
     x->n = 1;
     return x;
 }
-
-
 
 listD *mk_listD() {
     listD *l = (listD*) malloc(sizeof(listD));

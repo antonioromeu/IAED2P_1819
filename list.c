@@ -1,5 +1,7 @@
 #include "List.h"
 
+/* Basics operations of linked list */
+
 list *mk_list() {
     list *l = (list*) malloc(sizeof(list));
     l->head = NULL;

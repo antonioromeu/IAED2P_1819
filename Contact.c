@@ -1,5 +1,6 @@
-#include "ContactTree.h"
+#include "Contact.h"
 
+/*Creates a new struct Item that receives 4 arguments */
 Item newItem(char *name, char *local, char *domain, char *number) {
     Item x = (Item) malloc(sizeof(struct contact));
     x->name = (char*) malloc(strlen(name) + 1);
@@ -13,6 +14,7 @@ Item newItem(char *name, char *local, char *domain, char *number) {
     return x;
 }
 
+/* Frees all the pointers of the struct Item and the Item itself */
 void deleteItem(Item a) {
     free(a->name);
     free(a->local);
@@ -21,6 +23,7 @@ void deleteItem(Item a) {
     free(a);
 }
 
+/* Prints the pointers to name, local, domain and number of the Item */
 void visitItem(Item a) {
     printf("%s %s@%s %s\n", a->name, a->local, a->domain, a->number);
 }

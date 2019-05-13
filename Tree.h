@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "ContactTree.h"
+#include "Contact.h"
 
 typedef struct STnode *link;
 
