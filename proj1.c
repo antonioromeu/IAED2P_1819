@@ -273,7 +273,7 @@ void apagaEvento(char descricao[]) {
 }
 
 /* Changes the start of an event after doing the verifications. */
-void alteraInicio(char descricao[], int novo_inicio) {    
+void alteraInicio(char descricao[], int novo_inicio) {
     int res = 0, index;
     evento temp, copia;
     index = procuraEvento(descricao);
@@ -316,7 +316,7 @@ void alteraDuracao(char descricao[], int nova_duracao) {
         res += verificaSobreposicaoResponsavel(temp);
         res += verificaSobreposicaoParticipantes(temp);
         if (res != 0) {
-            adicionaEvento(copia);            
+            adicionaEvento(copia);
             return;
         }
         adicionaEvento(temp);
@@ -336,7 +336,7 @@ void alteraSala(char descricao[], int nova_sala) {
         temp.sala = nova_sala;
         res += verificaSobreposicaoSalas(temp);
         if (res != 0) {
-            adicionaEvento(copia);            
+            adicionaEvento(copia);
             return;
         }
         adicionaEvento(temp);
